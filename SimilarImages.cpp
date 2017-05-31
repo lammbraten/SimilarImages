@@ -28,12 +28,13 @@ vector<Mat> readImages(const char *folder) {
 	vector<Mat> data;
 	glob(folder, fn, true);
 	for (size_t k = 0; k<fn.size(); ++k){
-		Mat im = imread(fn[k]);
-		im.convertTo(im, CV_BGR2HSV);
-			
-		if (im.empty()) 
+		Mat img = imread(fn[k]);
+		Mat img_hsv;
+		img.convertTo(img_hsv, CV_BGR2HSV);
+
+		if (img_hsv.empty())
 			continue; 
-		data.push_back(im);
+		data.push_back(img_hsv);
 	}
 	return data;
 }
@@ -54,9 +55,16 @@ int main() {
 
 	showImages(images);
 
-	Histogramm *h = new Histogramm(images.at(0));
+	vector<Histogramm*> histograms;
+	for (Mat image : images)
+		histograms.push_back(new Histogramm(image));
+	//Histogramm *h = new Histogramm(images.at(0));
 
-	h->print_histogram();
+	histograms.at(0)->print_histogram();
+	histograms.at(1)->print_histogram();
+	histograms.at(2)->print_histogram();
+	//histograms.at(3)->print_histogram();
+//	h->print_histogram();
 
 	waitKey(0);
     return 0;

@@ -142,10 +142,12 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Distances.h" />
     <ClInclude Include="include\Histogramm.h" />
     <ClInclude Include="include\targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Distances.cpp" />
     <ClCompile Include="src\Histogramm.cpp" />
     <ClCompile Include="SimilarImages.cpp" />
   </ItemGroup>
