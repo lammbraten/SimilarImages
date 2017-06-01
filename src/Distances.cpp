@@ -1,6 +1,10 @@
 #include "../include/Distances.h"
 
+/*
+*	city bloc distance
+*/
 int Distances::L1_norm(Histogramm h1, Histogramm h2) {
+
 	return 0;
 }
 

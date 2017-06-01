@@ -51,19 +51,22 @@ void showImages(vector<Mat> images) {
 }
 
 int main() {
-	vector<Mat> images = readImages("data2");
+	vector<Mat> images = readImages("data");
 
-	showImages(images);
+	//showImages(images);
 
 	vector<Histogramm*> histograms;
 	for (Mat image : images)
 		histograms.push_back(new Histogramm(image));
 	//Histogramm *h = new Histogramm(images.at(0));
-
-	histograms.at(0)->print_histogram();
-	histograms.at(1)->print_histogram();
-	histograms.at(2)->print_histogram();
-	//histograms.at(3)->print_histogram();
+	for(Histogramm *h : histograms)
+		h->print_histogram(10);
+	/*waitKey(0);
+	histograms.at(1)->print_histogram(10);
+	waitKey(0);
+	histograms.at(2)->print_histogram(10);
+	waitKey(0);
+	histograms.at(3)->print_histogram(10);*/
 //	h->print_histogram();
 
 	waitKey(0);
