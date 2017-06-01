@@ -1,6 +1,7 @@
 #include "targetver.h"
 
 #include <stdio.h>
+#include <iomanip> 
 #include <tchar.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -23,9 +24,9 @@ int isDir(const char *path) {
 }
 
 vector<Mat> readImages(const char *folder) {
-
 	vector<String> fn;
 	vector<Mat> data;
+
 	glob(folder, fn, true);
 	for (size_t k = 0; k<fn.size(); ++k){
 		Mat img = imread(fn[k]);
@@ -70,6 +71,8 @@ int main() {
 //	h->print_histogram();
 
 	waitKey(0);
+	waitKey(0);
+
     return 0;
 }
 

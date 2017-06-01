@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <iomanip> 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
@@ -21,6 +22,7 @@ private:
 	const int VAL_BINS = 3;
 	const int MAX_BINS = HUE_BINS*SAT_BINS*VAL_BINS;
 
+	int bin_value_size = 0;
 
 	struct bin {
 		int h_val;
@@ -33,7 +35,7 @@ private:
 	Mat s_image;
 	Mat v_image;
 
-	int *bins;
+	double *bins;
 	int *h_vals;
 	int *s_vals;
 	int *v_vals;
@@ -45,5 +47,6 @@ private:
 	int get_bin_number_of(int h, int s, int v);
 
 	void calc_bins();
+	void normalize_bins();
 };
 

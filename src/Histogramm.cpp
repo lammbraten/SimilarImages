@@ -19,34 +19,19 @@ Histogramm::Histogramm(Mat img){
 	
 	calc_bins();
 
+}
 
-/*
-	int i = 0;
-	for (int h = 0; h < HUE_BINS; h++) {
-		for (int s = 0; s < SAT_BINS; s++) {
-			for (int v = 0; v < VAL_BINS; v++) {
-				bins[i].h_val = h;
-				bins[i].s_val = s;
-				bins[i].v_val = v;
-
-				//cout << i << endl;
-				//cout << get_bin_number_of(h, s, v)<< endl;
-				i++;
-			}
-		}
-	}*/
-
+void Histogramm::normalize_bins() {
+	for (int i = 0; i < MAX_BINS; i++)
+		bins[i] = bins[i] / bin_value_size;
 }
 
 void Histogramm::calc_bins() {
 	int h_bin, s_bin, v_bin, bin;
-	bins = new int[MAX_BINS];
-
+	bins = new double[MAX_BINS];
 
 	for (int i = 0; i < MAX_BINS; i++)
 		bins[i] = 0;
-
-	
 
 	for (int r = 0; r < src->rows; r++) {
 		for (int c = 0; c < src->cols; c++) {
@@ -58,8 +43,11 @@ void Histogramm::calc_bins() {
 			//cout << bin << "\t|" << h_bin << "\t|" << s_bin << "\t|" << v_bin << "\t|" << bins[bin] << endl;
 
 			bins[bin] += 1;
+			bin_value_size++;
 		}
 	}
+
+	normalize_bins();
 }
 
 int Histogramm::get_bin_number_of(int h, int s, int v){
@@ -79,37 +67,16 @@ void Histogramm::print_histogram(){
 	for (int h = 0; h < HUE_BINS; h++) {
 		for (int s = 0; s < SAT_BINS; s++) {
 			for (int v = 0; v < VAL_BINS; v++) {
-				cout << i << "\t|" << h << "\t|" << s << "\t|" << v << "\t|" << bins[i] << endl;
+				cout << i << "\t|" << h << "\t|" << s << "\t|" << v << "\t|"<< fixed << bins[i] << endl;
 
-			//cout << i << endl;
-			//cout << get_bin_number_of(h, s, v)<< endl;
 				i++;
 			}
 		}
 	}
-	
-	/*cout << "N#\t| Hue:\t| Sat:\t| Val" << endl;
-	cout << "--------+-------+-------+-------" << endl;
-	int maxBins = max(HUE_BINS, max(SAT_BINS, VAL_BINS));
-	int h_val, s_val, v_val;
-	for (int i = 0; i < maxBins; i++) {
-		if (i < HUE_BINS)
-			h_val = (int)h_vals[i];
-		else
-			h_val = -1;
-		if (i < SAT_BINS)
-			s_val = (int)s_vals[i];
-		else
-			s_val = -1;
-		if (i < VAL_BINS)
-			v_val = (int)v_vals[i];
-		else
-			v_val = -1;
-		print_histogramm_row(i, h_val, s_val, v_val);
-	}*/
 }
 
 void Histogramm::print_histogram(int rows) {
+	cout << "Values: " << bin_value_size << endl;
 	cout << "N#\t| Hue:\t| Sat:\t| Val\t| number" << endl;
 	cout << "--------+-------+-------+-------+--------" << endl;
 
@@ -118,10 +85,8 @@ void Histogramm::print_histogram(int rows) {
 	for (int h = 0; h < HUE_BINS; h++) {
 			for (int s = 0; s < SAT_BINS; s++) {
 				for (int v = 0; v < VAL_BINS; v++) {
-					cout << i << "\t|" << h << "\t|" << s << "\t|" << v << "\t|" << bins[i] << endl;
+					cout << i << "\t|" << h << "\t|" << s << "\t|" << v << "\t|"<< fixed << bins[i] << endl;
 
-					//cout << i << endl;
-					//cout << get_bin_number_of(h, s, v)<< endl;
 					i++;
 					if (rows - i <= 0)
 						return;
