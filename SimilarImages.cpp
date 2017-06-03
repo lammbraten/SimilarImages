@@ -62,8 +62,12 @@ int main() {
 	//	h->print_histogram();
 
 	double dist;
+	double *ct_mat = Distances::calc_crosstalk_matrix();
+	double d_max = Distances::calc_d_max(ct_mat);
+
 	for(Histogramm *h : histograms)
-		cout << "Dist "<< h->getFilename() << ": " << Distances::Hamming_Distance(*histograms.at(0), *h, 0.01) << endl;
+	//	cout << "Dist "<< h->getFilename() << ": " << Distances::Hamming_Distance(*histograms.at(0), *h, 0.01) << endl;
+		cout << "Dist " << h->getFilename() << ": " << Distances::calc_dist_from_ct_mat(*histograms.at(0), *h, ct_mat, d_max) << endl;
 
 
 	waitKey(0);

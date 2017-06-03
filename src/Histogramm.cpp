@@ -102,8 +102,45 @@ int Histogramm::size() {
 	return this->MAX_BINS;
 }
 
-string Histogramm::getFilename()
-{
+
+double Histogramm::getHueCentroidFromBin(int h_bin){
+	//TODO: Offset/ high values?
+	return h_bin * HUE_RANGE / HUE_BINS;
+}
+
+double Histogramm::getSatCentroidFromBin(int s_bin){
+	//TODO: Offset/ high values?
+	return s_bin * HUE_RANGE / HUE_BINS;
+}
+
+double Histogramm::getValCentroidFromBin(int v_bin){
+	//TODO: Offset/ high values?
+	return v_bin * HUE_RANGE / HUE_BINS;
+}
+
+int calc_Theta(int h_x, int h_y) {
+	int h = abs(h_x - h_y);
+	if (h <= 180)
+		return h;
+	return 360 - h;
+}
+
+double Histogramm::calc_dCyl(int bh_x, int bh_y, int bs_x, int bs_y, int bv_x, int bv_y){
+	double d_v = abs(getValCentroidFromBin(bv_y) - getValCentroidFromBin(bv_x));
+	double s_x = getSatCentroidFromBin(bs_x);
+	double s_y = getSatCentroidFromBin(bs_y);
+
+	double theta = calc_Theta(getHueCentroidFromBin(bh_x), getHueCentroidFromBin(bh_y));
+
+	double d_c = sqrt((s_x * s_x
+		+ s_y * s_y
+		- 2 * (s_x*s_y * cos(theta))
+		));
+
+	return sqrt((d_v*d_v)+(d_c*d_c));
+}
+
+string Histogramm::getFilename(){
 	return filename;
 }
 
