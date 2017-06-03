@@ -24,9 +24,9 @@ int isDir(const char *path) {
 		return 0;
 }
 
-vector<Mat> readImages(const char *folder) {
+vector<Histogramm *> readImages(const char *folder) {
 	vector<String> fn;
-	vector<Mat> data;
+	vector<Histogramm *> data;
 
 	glob(folder, fn, true);
 	for (size_t k = 0; k<fn.size(); ++k){
@@ -36,7 +36,8 @@ vector<Mat> readImages(const char *folder) {
 
 		if (img_hsv.empty())
 			continue; 
-		data.push_back(img_hsv);
+		cout << fn[k] << endl;
+		data.push_back(new Histogramm(img_hsv, fn[k]));
 	}
 	return data;
 }
@@ -53,32 +54,17 @@ void showImages(vector<Mat> images) {
 }
 
 int main() {
-	vector<Mat> images = readImages("data2");
+	vector<Histogramm *> histograms = readImages("data");
 
 	//showImages(images);
 
-	vector<Histogramm *> histograms;
-	//histograms.reserve(images.size());
-
-	for (Mat image : images)
-		histograms.push_back(new Histogramm(image));
-	//Histogramm *h = new Histogramm(images.at(0));
 	//for(Histogramm *h : histograms)
 	//	h->print_histogram();
-	/*waitKey(0);
-	histograms.at(1)->print_histogram(10);
-	waitKey(0);
-	histograms.at(2)->print_histogram(10);
-	waitKey(0);
-	histograms.at(3)->print_histogram(10);*/
-//	h->print_histogram();
+
 	double dist;
-	dist = Distances::L1_norm(*histograms.at(0), *histograms.at(1));
-	cout << "Dist " << dist << endl;
-	dist = Distances::L1_norm(*histograms.at(0), *histograms.at(2));
-	cout << "Dist " << dist << endl;
-	dist = Distances::L1_norm(*histograms.at(0), *histograms.at(3));
-	cout << "Dist " << dist << endl;
+	for(Histogramm *h : histograms)
+		cout << "Dist "<< h->getFilename() << ": " << Distances::Hamming_Distance(*histograms.at(0), *h, 0.01) << endl;
+
 
 	waitKey(0);
 	waitKey(0);

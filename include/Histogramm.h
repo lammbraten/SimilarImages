@@ -11,11 +11,12 @@ using namespace std;
 class Histogramm {
 public:
 	Histogramm();
-	Histogramm(Mat img);
+	Histogramm(Mat img, string filename);
 	void print_histogram();
 	void print_histogram(int rows);
 	double *getBins();
 	int size();
+	string getFilename();
 	~Histogramm();
 	
 
@@ -27,21 +28,13 @@ private:
 
 	int bin_value_size = 0;
 
-	struct bin {
-		int h_val;
-		int s_val;
-		int v_val;
-	};
-
 	Mat *src;
 	Mat h_image;
 	Mat s_image;
 	Mat v_image;
 
 	double *bins;
-	int *h_vals;
-	int *s_vals;
-	int *v_vals;
+	string filename;
 
 	int *set_val_for_Channel(Mat channel, int bins);
 	int calc_bin_position(uchar val, int max_val, int max_bin);

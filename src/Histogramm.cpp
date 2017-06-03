@@ -1,14 +1,12 @@
 #include "../include/Histogramm.h"
 
-
-
 using namespace std;
 
 Histogramm::Histogramm(){
 	cout << "Std-Constructor called" << endl;
 }
 
-Histogramm::Histogramm(Mat img){
+Histogramm::Histogramm(Mat img, string filename){
 	this->src = &img;
 
 	Mat planes[3];
@@ -16,11 +14,8 @@ Histogramm::Histogramm(Mat img){
 	this->h_image = planes[0];
 	this->s_image = planes[1];
 	this->v_image = planes[2];
+	this->filename = filename;
 
-	//h_vals = set_val_for_Channel(h_image, HUE_BINS);
-	//s_vals =  set_val_for_Channel(s_image, SAT_BINS);
-	//v_vals = set_val_for_Channel(v_image, VAL_BINS);
-	
 	calc_bins();
 
 }
@@ -107,6 +102,11 @@ int Histogramm::size() {
 	return this->MAX_BINS;
 }
 
+string Histogramm::getFilename()
+{
+	return filename;
+}
+
 void Histogramm::print_histogramm_row(int id, int h, int s, int v) {
 	string h_val = "-";
 	string s_val = "-";
@@ -123,14 +123,8 @@ void Histogramm::print_histogramm_row(int id, int h, int s, int v) {
 
 }
 
-
-
-
-
 Histogramm::~Histogramm(){
-	delete[] h_vals;
-	delete[] h_vals;
-	delete[] h_vals;
+
 }
 
 int Histogramm::calc_bin_position(uchar val, int max_val, int max_bin) {
