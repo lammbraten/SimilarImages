@@ -5,8 +5,8 @@
 class Distances {
 
 public:
-	static int L1_norm(Histogramm h1, Histogramm h2);
-	static int L2_norm(Histogramm h1, Histogramm h2);
+	static double L1_norm(Histogramm &h1, Histogramm &h2);
+	static double L2_norm(Histogramm &h1, Histogramm &h2);
 
 private:
 	Distances() {}

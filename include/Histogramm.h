@@ -10,9 +10,12 @@ using namespace std;
 
 class Histogramm {
 public:
+	Histogramm();
 	Histogramm(Mat img);
 	void print_histogram();
 	void print_histogram(int rows);
+	double *getBins();
+	int size();
 	~Histogramm();
 	
 

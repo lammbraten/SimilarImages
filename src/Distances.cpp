@@ -3,12 +3,21 @@
 /*
 *	city bloc distance
 */
-int Distances::L1_norm(Histogramm h1, Histogramm h2) {
+double Distances::L1_norm(Histogramm &h1, Histogramm &h2) {
+	double result = 0;
+	
+	for (int i = 0; i < h1.size(); i++)
+		result += abs(h1.getBins()[i] - h2.getBins()[i]);
 
-	return 0;
+	return result;
 }
 
 
-int Distances::L2_norm(Histogramm h1, Histogramm h2) {
-	return 0;
+double Distances::L2_norm(Histogramm &h1, Histogramm &h2) {
+	double result = 0;
+
+	for (int i = 0; i < h1.size(); ++i) 
+		result += pow(abs(h1.getBins()[i] - h2.getBins()[i]), 2);
+
+	return sqrt(result);
 }

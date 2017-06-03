@@ -7,6 +7,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include "include\Histogramm.h"
+#include "include\Distances.h"
 
 using namespace std;
 using namespace cv;
@@ -52,16 +53,18 @@ void showImages(vector<Mat> images) {
 }
 
 int main() {
-	vector<Mat> images = readImages("data");
+	vector<Mat> images = readImages("data2");
 
 	//showImages(images);
 
-	vector<Histogramm*> histograms;
+	vector<Histogramm *> histograms;
+	//histograms.reserve(images.size());
+
 	for (Mat image : images)
 		histograms.push_back(new Histogramm(image));
 	//Histogramm *h = new Histogramm(images.at(0));
-	for(Histogramm *h : histograms)
-		h->print_histogram(10);
+	//for(Histogramm *h : histograms)
+	//	h->print_histogram();
 	/*waitKey(0);
 	histograms.at(1)->print_histogram(10);
 	waitKey(0);
@@ -69,6 +72,13 @@ int main() {
 	waitKey(0);
 	histograms.at(3)->print_histogram(10);*/
 //	h->print_histogram();
+	double dist;
+	dist = Distances::L1_norm(*histograms.at(0), *histograms.at(1));
+	cout << "Dist " << dist << endl;
+	dist = Distances::L1_norm(*histograms.at(0), *histograms.at(2));
+	cout << "Dist " << dist << endl;
+	dist = Distances::L1_norm(*histograms.at(0), *histograms.at(3));
+	cout << "Dist " << dist << endl;
 
 	waitKey(0);
 	waitKey(0);

@@ -4,6 +4,10 @@
 
 using namespace std;
 
+Histogramm::Histogramm(){
+	cout << "Std-Constructor called" << endl;
+}
+
 Histogramm::Histogramm(Mat img){
 	this->src = &img;
 
@@ -93,6 +97,14 @@ void Histogramm::print_histogram(int rows) {
 				}
 			}
 		}
+}
+
+double *Histogramm::getBins(){
+	return this->bins;
+}
+
+int Histogramm::size() {
+	return this->MAX_BINS;
 }
 
 void Histogramm::print_histogramm_row(int id, int h, int s, int v) {
