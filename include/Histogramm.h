@@ -21,6 +21,7 @@ public:
 
 	Histogramm();
 	Histogramm(Mat img, string filename);
+	Mat getImage();
 	void print_histogram();
 	void print_histogram(int rows);
 	double *getBins();
@@ -36,7 +37,7 @@ public:
 private:
 	int bin_value_size = 0;
 
-	Mat *src;
+	Mat src;
 	Mat h_image;
 	Mat s_image;
 	Mat v_image;

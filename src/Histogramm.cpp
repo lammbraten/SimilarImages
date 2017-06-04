@@ -7,7 +7,7 @@ Histogramm::Histogramm(){
 }
 
 Histogramm::Histogramm(Mat img, string filename){
-	this->src = &img;
+	this->src = img;
 
 	Mat planes[3];
 	split(img, planes);
@@ -18,6 +18,10 @@ Histogramm::Histogramm(Mat img, string filename){
 
 	calc_bins();
 
+}
+
+Mat Histogramm::getImage(){
+	return src;
 }
 
 void Histogramm::normalize_bins() {
@@ -32,8 +36,8 @@ void Histogramm::calc_bins() {
 	for (int i = 0; i < MAX_BINS; i++)
 		bins[i] = 0;
 
-	for (int r = 0; r < src->rows; r++) {
-		for (int c = 0; c < src->cols; c++) {
+	for (int r = 0; r < src.rows; r++) {
+		for (int c = 0; c < src.cols; c++) {
 			//cout << (int) h_image.at<uchar>(Point(c, r)) << endl;
 			h_bin = calc_bin_position(h_image.at<uchar>(Point(c, r)), 256, HUE_BINS);
 			s_bin = calc_bin_position(s_image.at<uchar>(Point(c, r)), 256, SAT_BINS);

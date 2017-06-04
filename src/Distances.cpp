@@ -125,14 +125,14 @@ double Distances::avg_color_var(Histogramm &h1, Histogramm &h2){
 }
 
 double Distances::chi_sqaured(Histogramm &h1, Histogramm &h2){
-	double h_comb;
+	double h_comb; //H'
 	double result = 0;
 
 	for (int i = 0; i < Histogramm::MAX_BINS; i++) {
 		h_comb = (h1.getBins()[i] + h2.getBins()[i]) / 2;
 
 		if(h_comb != 0)
-			result += (h1.getBins()[i] + h2.getBins()[i]) / h_comb;
+			result += ((pow(h1.getBins()[i] - h2.getBins()[i], 2)) / h_comb);
 	}
 		
 	return result;
