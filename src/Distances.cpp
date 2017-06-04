@@ -87,4 +87,41 @@ double Distances::calc_dist_from_ct_mat(Histogramm &h1, Histogramm &h2, double *
 	return sqrt(result);
 }
 
+double Distances::avg_color_dist(Histogramm &h1, Histogramm &h2){
+	double h1_avg = 0;
+	double h2_avg = 0;
+
+	for (int i = 0; i < Histogramm::MAX_BINS; i++) {
+		h1_avg += h1.getBins()[i];
+		h2_avg += h2.getBins()[i];
+	}
+
+	h1_avg = h1_avg / Histogramm::MAX_BINS;
+	h2_avg = h2_avg / Histogramm::MAX_BINS;
+
+	return (double) abs(h1_avg - h2_avg);
+}
+
+double Distances::avg_color_var(Histogramm &h1, Histogramm &h2){
+	double h1_avg = 0;
+	double h2_avg = 0;
+	double h1_var = 0;
+	double h2_var = 0;
+
+	for (int i = 0; i < Histogramm::MAX_BINS; i++) {
+		h1_avg += h1.getBins()[i];
+		h2_avg += h2.getBins()[i];
+	}
+	h1_avg = h1_avg / Histogramm::MAX_BINS;
+	h2_avg = h2_avg / Histogramm::MAX_BINS;
+
+	for (int i = 0; i < Histogramm::MAX_BINS; i++) {
+		h1_var += h1.getBins()[i] * (i - h1_avg) * (i - h1_avg);
+		h2_var += h2.getBins()[i] * (i - h2_avg) * (i - h2_avg);
+	}
+
+	return (double) abs(h1_var - h2_var);
+
+}
+
 
