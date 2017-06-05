@@ -5,10 +5,10 @@
 #include <tchar.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
 
 #include "include\Histogramm.h"
 #include "include\Distances.h"
-#include "SimilarImages.h"
 
 using namespace std;
 using namespace cv;
@@ -48,12 +48,15 @@ vector<Histogramm *> readImages(const char *folder) {
 	for (size_t k = 0; k<fn.size(); ++k){
 		Mat img = imread(fn[k]);
 		Mat img_hsv;
+		size_t pos = fn[k].find("\\");
+		string filename = fn[k].substr(pos);
+
 		img.convertTo(img_hsv, CV_BGR2HSV);
 
 		if (img_hsv.empty())
 			continue; 
 		cout << fn[k] << endl;
-		data.push_back(new Histogramm(img_hsv, fn[k]));
+		data.push_back(new Histogramm(img_hsv, filename));
 	}
 	return data;
 }
@@ -141,9 +144,33 @@ double getThreshold() {
 }
 
 void showResultImages(vector<Result> results) {
+	Mat tmp;
+	string windowname;
+
+	int start_x = 600;
+	int start_y = 200;
+	int size = 200;
+	int row_size = 5;
+	int act_x = start_x;
+	int act_y = start_y;
+	int i = 0;
 	cout << "Result Images:" << endl;
 	for (Result r : results) {
-		imshow(r.name, r.img);
+
+		windowname = to_string(r.pos) + " " + r.name;
+		resize(r.img, tmp, Size(size, size));
+		imshow(windowname, tmp);
+
+		moveWindow(windowname, act_x, act_y);
+
+		i++;
+		if (i % row_size == 0) {
+			act_x = start_x;
+			act_y += size;
+		} else {
+			act_x += size;
+		}
+
 		cout << "Nr " << r.pos << ": \t" << setw(40) << r.name << "\t dist: " << r.dst << endl;
 	}
 	waitKey(0);
@@ -201,7 +228,6 @@ vector<Result> calc_default(double (func)(Histogramm&, Histogramm&)) {
 		r.name = h->getFilename();
 		r.img = h->getImage();
 		r.dst = func(*histograms.at(id), *h);
-		//r.dst = Distances::L2_norm(*histograms.at(id), *h);
 		r.pos = -1;
 
 		results.push_back(r);
