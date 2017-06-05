@@ -131,7 +131,7 @@ double Distances::chi_sqaured(Histogramm &h1, Histogramm &h2){
 	for (int i = 0; i < Histogramm::MAX_BINS; i++) {
 		h_comb = (h1.getBins()[i] + h2.getBins()[i]) / 2;
 
-		if(h_comb != 0)
+		if (h_comb != 0)
 			result += ((pow(h1.getBins()[i] - h2.getBins()[i], 2)) / h_comb);
 	}
 		
@@ -147,9 +147,10 @@ double Distances::jeffrey_divergence(Histogramm &h1, Histogramm &h2){
 		h1_i = h1.getBins()[i];
 		h2_i = h2.getBins()[i];
 
-		h_comb = (h1_i + h2_i) / 2;
-		//if this crashes check for divided zero
-		result += (h1_i * log(h1_i / h_comb)) + (h2_i * log(h2_i / h_comb));
+		h_comb = (double)(h1_i + h2_i) / 2;
+
+		if (h_comb != 0 && h1_i != 0 && h2_i != 0) 
+			result += (h1_i * log(h1_i / h_comb)) + (h2_i * log(h2_i / h_comb));
 
 	}
 	return result;
