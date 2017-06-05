@@ -213,7 +213,6 @@ void showResults(vector<Result> results) {
 		showOnlyResultList(results);
 	else
 		showResultImages(results);
-
 }
 
 

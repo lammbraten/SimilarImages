@@ -2,6 +2,7 @@
 
 using namespace std;
 
+
 Histogramm::Histogramm(){
 	cout << "Std-Constructor called" << endl;
 }
@@ -114,12 +115,12 @@ double Histogramm::getHueCentroidFromBin(int h_bin){
 
 double Histogramm::getSatCentroidFromBin(int s_bin){
 	//TODO: Offset/ high values?
-	return s_bin * HUE_RANGE / HUE_BINS;
+	return s_bin * SAT_RANGE / SAT_BINS;
 }
 
 double Histogramm::getValCentroidFromBin(int v_bin){
 	//TODO: Offset/ high values?
-	return v_bin * HUE_RANGE / HUE_BINS;
+	return v_bin * VAL_RANGE / VAL_BINS;
 }
 
 int calc_Theta(int h_x, int h_y) {

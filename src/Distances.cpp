@@ -87,6 +87,31 @@ double Distances::calc_dist_from_ct_mat(Histogramm &h1, Histogramm &h2, double *
 	return sqrt(result);
 }
 
+double normnAngleTo360(double x) {
+	x = fmod(x, 360);
+	if (x < 0)
+		x += 360;
+	return x;
+}
+
+double normnAngleTo180(double x) {
+	x = fmod(x + 180, 360);
+	if (x < 0)
+		x += 360;
+	return x - 180;
+}
+
+double angleDiff(double a, double b) {
+	double dif = fmod(b - a + 180, 360);
+	if (dif < 0)
+		dif += 360;
+	return dif - 180;
+}
+
+double meanAngle(double a, double b) {
+	return normnAngleTo360(a + angleDiff(normnAngleTo180(a), normnAngleTo180(b)) * 0.5);
+}
+
 double Distances::avg_color_dist(Histogramm &h1, Histogramm &h2){
 	double h1_avg = 0;
 	double h2_avg = 0;
@@ -102,8 +127,7 @@ double Distances::avg_color_dist(Histogramm &h1, Histogramm &h2){
 		if (h2_avg >= 0.5 && h2_avg_bin == -1)
 			h2_avg_bin = i;
 	}
-
-	return (double)abs(h1_avg_bin - h2_avg_bin);;
+	return abs(angleDiff(Histogramm::getHueCentroidFromBin(h1_avg_bin / 9), Histogramm::getHueCentroidFromBin(h2_avg_bin / 9)));
 }
 
 double Distances::avg_color_var(Histogramm &h1, Histogramm &h2){
