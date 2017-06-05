@@ -90,11 +90,12 @@ int printMenu() {
 	cout << "(11) \t compare by L1-norm" << endl;
 	cout << "(12) \t compare by L2-norm" << endl;
 	cout << "(13) \t compare by Binary Set Hamming Distance" << endl;
-	cout << "(14) \t compare with Crosstal-matrix" << endl;
+	cout << "(14) \t compare with Crosstalk-matrix" << endl;
 	cout << "(15) \t compare by average color" << endl;
 	cout << "(16) \t compare by average variance" << endl;
 	cout << "(17) \t compare by chi-square" << endl;
 	cout << "(18) \t compare by JD" << endl;
+	cout << "(100) \t end" << endl;
 	cout << MENULINE << endl;
 
 	cin >> val; 
@@ -126,11 +127,25 @@ int getReferenceImageId() {
 	return val;
 }
 
+double getThreshold() {
+	double threshold;
+
+	do {
+		threshold = 0;
+		cout << "Please enter a threshold between 0.0 and 1.0" << endl;
+
+		cin >> threshold;
+	} while (threshold < 0 || threshold > 1.0);
+
+
+	return threshold;
+}
+
 void showResultImages(vector<Result> results) {
 	cout << "Result Images:" << endl;
 	for (Result r : results) {
 		imshow(r.name, r.img);
-		cout << "Nr. " << r.pos << ": \t" << r.name << "\t\tdist: " << r.dst << endl;
+		cout << "Nr " << r.pos << ": \t" << setw(40) << r.name << "\t dist: " << r.dst << endl;
 	}
 	waitKey(0);
 }
@@ -138,7 +153,7 @@ void showResultImages(vector<Result> results) {
 void showOnlyResultList(vector<Result> results) {
 	cout << "Result List:" << endl;
 	for (Result r : results) 
-		cout << "Nr. " << r.pos << ": \t" << r.name << "\t\tdist: "<< r.dst<< endl;
+		cout << "Nr " << r.pos << ": \t" << setw(40) << r.name << "\t dist: "<< r.dst << endl;
 
 	system("pause");
 }
@@ -158,8 +173,26 @@ vector<Result> getTopTenResults(vector<Result> results) {
 	return answer;
 }
 
+void showResults(vector<Result> results) {
+	int val;
+	cout << "show only list, or show list and images?" << endl;
+	cout << MENULINE << endl;
+	cout << "(0) only list" << endl;
+	cout << "(1) list with images" << endl;
+	cout << MENULINE << endl;
+	
+	cin >> val;
 
-vector<Result> calcL1() {
+	if (val == 0)
+		showOnlyResultList(results);
+	else
+		showResultImages(results);
+
+}
+
+
+
+vector<Result> calc_default(double (func)(Histogramm&, Histogramm&)) {
 	int id = getReferenceImageId();
 
 	vector<Result> results;
@@ -168,7 +201,45 @@ vector<Result> calcL1() {
 		Result r;
 		r.name = h->getFilename();
 		r.img = h->getImage();
-		r.dst = Distances::L1_norm(*h, *histograms.at(id));
+		r.dst = func(*histograms.at(id), *h);
+		//r.dst = Distances::L2_norm(*histograms.at(id), *h);
+		r.pos = -1;
+
+		results.push_back(r);
+	}
+
+	return results;
+}
+
+vector<Result> calc_hamming() {
+	int id = getReferenceImageId();
+	double threshold = getThreshold();
+	vector<Result> results;
+
+	for (Histogramm *h : histograms) {
+		Result r;
+		r.name = h->getFilename();
+		r.img = h->getImage();
+		r.dst = Distances::Hamming_Distance(*histograms.at(id), *h, threshold);
+		r.pos = -1;
+
+		results.push_back(r);
+	}
+
+	return results;
+}
+
+vector<Result> calc_crosstalk() {
+	int id = getReferenceImageId();
+	double *ct_mat = Distances::calc_crosstalk_matrix();
+	double d_max = Distances::calc_d_max(ct_mat);
+	vector<Result> results;
+
+	for (Histogramm *h : histograms) {
+		Result r;
+		r.name = h->getFilename();
+		r.img = h->getImage();
+		r.dst = Distances::calc_dist_from_ct_mat(*histograms.at(id), *h, ct_mat, d_max);
 		r.pos = -1;
 
 		results.push_back(r);
@@ -179,9 +250,10 @@ vector<Result> calcL1() {
 
 int main() {
 	int val;
+	int end = 0;
 	histograms = readImages("data");
 
-	while (true) {
+	while (!end) {
 		 val = printMenu();
 
 		switch (val){	
@@ -195,38 +267,36 @@ int main() {
 			printHistogramms();
 			break;
 		case 11:
-			showResultImages(getTopTenResults(calcL1()));
-
+			showResults(getTopTenResults(calc_default(Distances::L1_norm)));
 			break;
 		case 12:
-			showImages();
+			showResults(getTopTenResults(calc_default(Distances::L2_norm)));
 			break;
 		case 13:
-			showImages();
+			showResults(getTopTenResults(calc_hamming()));
+			break;
+		case 14:
+			showResults(getTopTenResults(calc_crosstalk()));
+			break;
+		case 15:
+			showResults(getTopTenResults(calc_default(Distances::avg_color_dist)));
+			break;
+		case 16:
+			showResults(getTopTenResults(calc_default(Distances::avg_color_var)));
+			break;
+		case 17:
+			showResults(getTopTenResults(calc_default(Distances::chi_sqaured)));
+			break;
+		case 18:
+			showResults(getTopTenResults(calc_default(Distances::jeffrey_divergence)));
+			break;
+		case 100:
+			end = 1;
 			break;
 		default:
 			break;
 		}
 	}
-
-
-
-	double dist;
-	double *ct_mat = Distances::calc_crosstalk_matrix();
-	double d_max = Distances::calc_d_max(ct_mat);
-
-
-	for(Histogramm *h : histograms)
-	//	cout << "Dist "<< h->getFilename() << ": " << Distances::Hamming_Distance(*histograms.at(0), *h, 0.01) << endl;
-	//	cout << "Dist " << h->getFilename() << ": " << Distances::calc_dist_from_ct_mat(*histograms.at(0), *h, ct_mat, d_max) << endl;
-		cout << "Dist " << h->getFilename() << ": " << Distances::chi_sqaured(*histograms.at(0), *h) << endl;
-
-	//	cout << "Dist " << h->getFilename() << ": " << Distances::jeffrey_divergence(*histograms.at(0), *h) << endl;
-
-
-	waitKey(0);
-	waitKey(0);
-
     return 0;
 }
 
