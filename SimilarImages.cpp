@@ -25,8 +25,7 @@ struct Result {
 };
 
 
-bool compareByDst(const Result &a, const Result &b)
-{
+bool compareByDst(const Result &a, const Result &b){
 	return a.dst < b.dst;
 }
 
