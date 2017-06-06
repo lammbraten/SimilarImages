@@ -6,8 +6,8 @@
 double Distances::L1_norm(Histogramm &h1, Histogramm &h2) {
 	double result = 0;
 	
-	for (int i = 0; i < h1.size(); i++)
-		result += abs(h1.getBins()[i] - h2.getBins()[i]);
+	for (int i = 0; i < Histogramm::HUE_BINS; i++)
+		result += abs(h1.get_discBins()[i] - h2.get_discBins()[i]);
 
 	return result;
 }
@@ -18,8 +18,8 @@ double Distances::L1_norm(Histogramm &h1, Histogramm &h2) {
 double Distances::L2_norm(Histogramm &h1, Histogramm &h2) {
 	double result = 0;
 
-	for (int i = 0; i < h1.size(); ++i) 
-		result += pow(abs(h1.getBins()[i] - h2.getBins()[i]), 2);
+	for (int i = 0; i < Histogramm::HUE_BINS; ++i)
+		result += pow(abs(h1.get_discBins()[i] - h2.get_discBins()[i]), 2);
 
 	return sqrt(result);
 }
@@ -27,8 +27,8 @@ double Distances::L2_norm(Histogramm &h1, Histogramm &h2) {
 int calc_Hits(Histogramm h, double threshold) {
 	int hits = 0;
 
-	for (int i = 0; i < h.size(); ++i) {
-		if (h.getBins()[i] > threshold) {
+	for (int i = 0; i < Histogramm::HUE_BINS; ++i) {
+		if (h.get_discBins()[i] > threshold) {
 			hits++;
 		}
 	}
@@ -79,9 +79,9 @@ double Distances::calc_dist_from_ct_mat(Histogramm &h1, Histogramm &h2, double *
 		for (int j = 0; j < Histogramm::MAX_BINS; j++) {
 			a_ij = 1 - (ct_mat[i * Histogramm::MAX_BINS + j] / d_max);
 		//	cout << a_ij << endl;
-			result += (abs(h1.getBins()[i] - h2.getBins()[i]) 
+			result += (abs(h1.get_discBins()[i] - h2.get_discBins()[i]) 
 				* a_ij
-				* abs(h1.getBins()[j] - h2.getBins()[j]));
+				* abs(h1.get_discBins()[j] - h2.get_discBins()[j]));
 		}
 	}
 	return sqrt(result);
@@ -120,13 +120,10 @@ double Distances::avg_color_dist(Histogramm &h1, Histogramm &h2){
 	double h2_mean = 0.0;
 
 	for (int i = 0; i < Histogramm::MAX_BINS; i++) {
-		double act_angle = Histogramm::getHueCentroidFromBin(i / 9);
-		
-		for (int x = 0; x < h1.getBins()[i]; x++)
-			h1_mean = meanAngle(h1_mean, act_angle);
-		
-		for (int y = 0; y < h2.getBins()[i]; y++)
-			h2_mean = meanAngle(h2_mean, act_angle);
+		act_angle = Histogramm::getHueCentroidFromBin(i / 9);
+
+		h1_mean += meanAngle(h1_mean, act_angle) * h1.get_discBins()[i];
+		h2_mean += meanAngle(h2_mean, act_angle) * h2.get_discBins()[i];
 	}
 	return abs(angleDiff(h1_mean, h2_mean));
 }
@@ -142,18 +139,15 @@ double Distances::avg_color_var(Histogramm &h1, Histogramm &h2){
 	double h2_mean = 0.0;
 
 	for (int i = 0; i < Histogramm::MAX_BINS; i++) {
-		double act_angle = Histogramm::getHueCentroidFromBin(i / 9);
+		act_angle = Histogramm::getHueCentroidFromBin(i / 9);
 
-		for (int x = 0; x < h1.getBins()[i]; x++)
-			h1_mean = meanAngle(h1_mean, act_angle);
-
-		for (int y = 0; y < h2.getBins()[i]; y++)
-			h2_mean = meanAngle(h2_mean, act_angle);
+		h1_mean += meanAngle(h1_mean, act_angle) * h1.get_discBins()[i];
+		h2_mean += meanAngle(h2_mean, act_angle) * h2.get_discBins()[i];
 	}
 
 	for (int i = 0; i < Histogramm::MAX_BINS; i++) {
-		h1_var += h1.getBins()[i] * (i - h1_mean) * (i - h1_mean);
-		h2_var += h2.getBins()[i] * (i - h2_mean) * (i - h2_mean);
+		h1_var += h1.get_discBins()[i] * (i - h1_mean) * (i - h1_mean);
+		h2_var += h2.get_discBins()[i] * (i - h2_mean) * (i - h2_mean);
 	}
 
 	return (double) abs(h1_var - h2_var);
@@ -165,10 +159,10 @@ double Distances::chi_sqaured(Histogramm &h1, Histogramm &h2){
 	double result = 0;
 
 	for (int i = 0; i < Histogramm::MAX_BINS; i++) {
-		h_comb = (h1.getBins()[i] + h2.getBins()[i]) / 2;
+		h_comb = (h1.get_discBins()[i] + h2.get_discBins()[i]) / 2;
 
 		if (h_comb != 0)
-			result += ((pow(h1.getBins()[i] - h2.getBins()[i], 2)) / h_comb);
+			result += ((pow(h1.get_discBins()[i] - h2.get_discBins()[i], 2)) / h_comb);
 	}
 		
 	return result;
@@ -180,8 +174,8 @@ double Distances::jeffrey_divergence(Histogramm &h1, Histogramm &h2){
 	double h1_i, h2_i;
 
 	for (int i = 0; i < Histogramm::MAX_BINS; i++) {
-		h1_i = h1.getBins()[i];
-		h2_i = h2.getBins()[i];
+		h1_i = h1.get_discBins()[i];
+		h2_i = h2.get_discBins()[i];
 
 		h_comb = (double)(h1_i + h2_i) / 2;
 

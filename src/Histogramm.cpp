@@ -100,12 +100,16 @@ void Histogramm::print_histogram(int rows) {
 		}
 }
 
-double *Histogramm::getBins(){
+double *Histogramm::get_discBins(){
 	return this->bins_disc;
 }
 
+int *Histogramm::get_absBins() {
+	return this->bins_abs;
+}
+
 int Histogramm::size() {
-	return this->MAX_BINS;
+	return this->bin_value_size;
 }
 
 

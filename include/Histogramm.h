@@ -24,7 +24,8 @@ public:
 	Mat getImage();
 	void print_histogram();
 	void print_histogram(int rows);
-	double *getBins();
+	double *get_discBins();
+	int *get_absBins();
 	int size();
 	static double getHueCentroidFromBin(int bin);
 	static double getSatCentroidFromBin(int bin);
