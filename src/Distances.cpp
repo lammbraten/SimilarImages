@@ -109,49 +109,51 @@ double angleDiff(double a, double b) {
 }
 
 double meanAngle(double a, double b) {
-	return normnAngleTo360(a + angleDiff(normnAngleTo180(a), normnAngleTo180(b)) * 0.5);
+	return normnAngleTo360(normnAngleTo180(a) + angleDiff(normnAngleTo180(a), normnAngleTo180(b)) * 0.5);
 }
 
 double Distances::avg_color_dist(Histogramm &h1, Histogramm &h2){
-	double h1_avg = 0;
-	double h2_avg = 0;
-	int h1_avg_bin = -1;
-	int h2_avg_bin =-1;
+	double act_angle;
+
+	//0 ist eigentlich kein guter startwert. Sollte aber bei vielen bin-values keinen unterschied machen;
+	double h1_mean = 0.0;
+	double h2_mean = 0.0;
 
 	for (int i = 0; i < Histogramm::MAX_BINS; i++) {
-		h1_avg += h1.getBins()[i];
-		if (h1_avg >= 0.5 && h1_avg_bin == -1)
-			h1_avg_bin = i;
-
-		h2_avg += h2.getBins()[i];
-		if (h2_avg >= 0.5 && h2_avg_bin == -1)
-			h2_avg_bin = i;
+		double act_angle = Histogramm::getHueCentroidFromBin(i / 9);
+		
+		for (int x = 0; x < h1.getBins()[i]; x++)
+			h1_mean = meanAngle(h1_mean, act_angle);
+		
+		for (int y = 0; y < h2.getBins()[i]; y++)
+			h2_mean = meanAngle(h2_mean, act_angle);
 	}
-	return abs(angleDiff(Histogramm::getHueCentroidFromBin(h1_avg_bin / 9), Histogramm::getHueCentroidFromBin(h2_avg_bin / 9)));
+	return abs(angleDiff(h1_mean, h2_mean));
 }
 
 double Distances::avg_color_var(Histogramm &h1, Histogramm &h2){
-	double h1_avg = 0;
-	double h2_avg = 0;
 	double h1_var = 0;
 	double h2_var = 0;
 
-	int h1_avg_bin = -1;
-	int h2_avg_bin = -1;
+	double act_angle;
+
+	//0 ist eigentlich kein guter startwert. Sollte aber bei vielen bin-values keinen unterschied machen;
+	double h1_mean = 0.0;
+	double h2_mean = 0.0;
 
 	for (int i = 0; i < Histogramm::MAX_BINS; i++) {
-		h1_avg += h1.getBins()[i];
-		if (h1_avg >= 0.5 && h1_avg_bin == -1)
-			h1_avg_bin = i;
+		double act_angle = Histogramm::getHueCentroidFromBin(i / 9);
 
-		h2_avg += h2.getBins()[i];
-		if (h2_avg >= 0.5 && h2_avg_bin == -1)
-			h2_avg_bin = i;
+		for (int x = 0; x < h1.getBins()[i]; x++)
+			h1_mean = meanAngle(h1_mean, act_angle);
+
+		for (int y = 0; y < h2.getBins()[i]; y++)
+			h2_mean = meanAngle(h2_mean, act_angle);
 	}
 
 	for (int i = 0; i < Histogramm::MAX_BINS; i++) {
-		h1_var += h1.getBins()[i] * (i - h1_avg_bin) * (i - h1_avg_bin);
-		h2_var += h2.getBins()[i] * (i - h2_avg_bin) * (i - h2_avg_bin);
+		h1_var += h1.getBins()[i] * (i - h1_mean) * (i - h1_mean);
+		h2_var += h2.getBins()[i] * (i - h2_mean) * (i - h2_mean);
 	}
 
 	return (double) abs(h1_var - h2_var);

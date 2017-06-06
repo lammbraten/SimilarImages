@@ -26,16 +26,17 @@ Mat Histogramm::getImage(){
 }
 
 void Histogramm::normalize_bins() {
+	bins_disc = new double[MAX_BINS];
 	for (int i = 0; i < MAX_BINS; i++)
-		bins[i] = bins[i] / bin_value_size;
+		bins_disc[i] = (double)bins_abs[i] / bin_value_size;
 }
 
 void Histogramm::calc_bins() {
 	int h_bin, s_bin, v_bin, bin;
-	bins = new double[MAX_BINS];
+	bins_abs = new int[MAX_BINS];
 
 	for (int i = 0; i < MAX_BINS; i++)
-		bins[i] = 0;
+		bins_abs[i] = 0;
 
 	for (int r = 0; r < src.rows; r++) {
 		for (int c = 0; c < src.cols; c++) {
@@ -46,7 +47,7 @@ void Histogramm::calc_bins() {
 			bin = get_bin_number_of(h_bin, s_bin, v_bin);
 			//cout << bin << "\t|" << h_bin << "\t|" << s_bin << "\t|" << v_bin << "\t|" << bins[bin] << endl;
 
-			bins[bin] += 1;
+			bins_abs[bin] += 1;
 			bin_value_size++;
 		}
 	}
@@ -71,7 +72,7 @@ void Histogramm::print_histogram(){
 	for (int h = 0; h < HUE_BINS; h++) {
 		for (int s = 0; s < SAT_BINS; s++) {
 			for (int v = 0; v < VAL_BINS; v++) {
-				cout << i << "\t|" << h << "\t|" << s << "\t|" << v << "\t|"<< fixed << bins[i] << endl;
+				cout << i << "\t|" << h << "\t|" << s << "\t|" << v << "\t|"<< fixed << bins_disc[i] << endl;
 
 				i++;
 			}
@@ -89,7 +90,7 @@ void Histogramm::print_histogram(int rows) {
 	for (int h = 0; h < HUE_BINS; h++) {
 			for (int s = 0; s < SAT_BINS; s++) {
 				for (int v = 0; v < VAL_BINS; v++) {
-					cout << i << "\t|" << h << "\t|" << s << "\t|" << v << "\t|"<< fixed << bins[i] << endl;
+					cout << i << "\t|" << h << "\t|" << s << "\t|" << v << "\t|"<< fixed << bins_disc[i] << endl;
 
 					i++;
 					if (rows - i <= 0)
@@ -100,7 +101,7 @@ void Histogramm::print_histogram(int rows) {
 }
 
 double *Histogramm::getBins(){
-	return this->bins;
+	return this->bins_disc;
 }
 
 int Histogramm::size() {
@@ -110,17 +111,17 @@ int Histogramm::size() {
 
 double Histogramm::getHueCentroidFromBin(int h_bin){
 	//TODO: Offset/ high values?
-	return h_bin * HUE_RANGE / HUE_BINS;
+	return (double)h_bin * HUE_RANGE / HUE_BINS;
 }
 
 double Histogramm::getSatCentroidFromBin(int s_bin){
 	//TODO: Offset/ high values?
-	return s_bin * SAT_RANGE / SAT_BINS;
+	return (double)s_bin * SAT_RANGE / SAT_BINS;
 }
 
 double Histogramm::getValCentroidFromBin(int v_bin){
 	//TODO: Offset/ high values?
-	return v_bin * VAL_RANGE / VAL_BINS;
+	return (double) v_bin * VAL_RANGE / VAL_BINS;
 }
 
 int calc_Theta(int h_x, int h_y) {

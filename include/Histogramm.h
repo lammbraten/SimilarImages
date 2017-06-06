@@ -42,7 +42,9 @@ private:
 	Mat s_image;
 	Mat v_image;
 
-	double *bins;
+	double *bins_disc;
+	int *bins_abs;
+
 	string filename;
 
 	int *set_val_for_Channel(Mat channel, int bins);
