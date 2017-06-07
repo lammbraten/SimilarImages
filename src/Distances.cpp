@@ -33,8 +33,6 @@ int calc_Hits(Histogramm h, double threshold) {
 		}
 	}
 
-
-
 	return hits;
 }
 

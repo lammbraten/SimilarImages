@@ -25,6 +25,10 @@ Mat Histogramm::getImage(){
 	return src;
 }
 
+Mat Histogramm::getHueChannel(){
+	return this->h_image;
+}
+
 void Histogramm::normalize_bins() {
 	bins_disc = new double[MAX_BINS];
 	for (int i = 0; i < MAX_BINS; i++)

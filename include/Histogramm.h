@@ -22,6 +22,7 @@ public:
 	Histogramm();
 	Histogramm(Mat img, string filename);
 	Mat getImage();
+	Mat getHueChannel();
 	void print_histogram();
 	void print_histogram(int rows);
 	double *get_discBins();
