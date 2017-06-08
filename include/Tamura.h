@@ -9,7 +9,7 @@ class Tamura {
 public:
 	Tamura(int k_min, int k_max);
 	~Tamura();
-	Mat calc_Sbest();
+	double calc_Sbest();
 
 private:
 	int k_min, k_max;

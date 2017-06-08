@@ -22,6 +22,34 @@ Tamura::~Tamura() {
 
 }
 
+double Tamura::calc_Sbest() {
+	double result;
+	double *s_best = new double[hue_image.rows * hue_image.cols];
+	
+	int best_k = k_min;
+	for (int x = 0; x < hue_image.cols; ++x) {
+		for (int y = 0; y < hue_image.rows; ++y) {
+			for (int k = k_min; k < k_max; ++k) {
+				if(max(gray_val_differences_h.at(best_k - k_min)[x + y * hue_image.cols], gray_val_differences_v.at(best_k - k_min)[x + y * hue_image.cols]) 
+					< max(gray_val_differences_h.at(k - k_min)[x + y * hue_image.cols], gray_val_differences_v.at(k - k_min)[x + y * hue_image.cols]))
+					best_k = k;
+			}
+			s_best[x + y * hue_image.cols] = pow(2.0, (double)best_k);
+			best_k = 0;
+		}
+	}
+
+	int result = 0;
+	int w = hue_image.cols;
+	int h = hue_image.rows;
+
+	for (int i = 0; i < w - 1; ++i) 
+		for (int j = 0; j < h - 1; ++j) 
+			result += s_best[i + j * hue_image.cols];
+
+	return (result/(w*h));
+}
+
 
 double *Tamura::calc_mean_gray_val(int k){
 	double *mean_gray_val_mat = new double[hue_image.rows * hue_image.cols];
