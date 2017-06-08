@@ -13,7 +13,16 @@ public:
 
 private:
 	int k_min, k_max;
-	double calc_Eh(int k, int x, int y);
-	double calc_Ev(int k, int x, int y);
+	vector<double*> mean_gray_vals;
+	vector<double*> gray_val_differences_h;
+	vector<double*> gray_val_differences_v;
+	Mat hue_image;
+
+	static const int HORIZONTAL = 1;
+	static const int VERTICAL = -1;
+
+	double *calc_mean_gray_val(int k);
+	void gray_val_differences(int k, double *A_k, double *E_kh, double *E_kv);
+
 };
 
