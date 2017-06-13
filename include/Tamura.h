@@ -7,8 +7,7 @@ using namespace std;
 
 class Tamura {
 public:
-	Tamura(int k_min, int k_max);
-	~Tamura();
+	Tamura(int k_min, int k_max, Mat hue_image);
 	double calc_Sbest();
 
 private:

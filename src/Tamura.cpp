@@ -1,10 +1,10 @@
 #include "../include/Tamura.h"
 
 
-Tamura::Tamura(int k_min, int k_max) {
+Tamura::Tamura(int k_min, int k_max, Mat hue_image) {
 	this->k_min = k_min;
 	this->k_max = k_max;
-
+	this->hue_image = hue_image;
 
 	for (int k = k_min; k < k_max; k++) {
 		mean_gray_vals.push_back(calc_mean_gray_val(k));
@@ -18,14 +18,12 @@ Tamura::Tamura(int k_min, int k_max) {
 	}
 }
 
-Tamura::~Tamura() {
-
-}
-
 double Tamura::calc_Sbest() {
-	double result;
+	double result = 0;
 	double *s_best = new double[hue_image.rows * hue_image.cols];
-	
+	int w = hue_image.cols;
+	int h = hue_image.rows;
+
 	int best_k = k_min;
 	for (int x = 0; x < hue_image.cols; ++x) {
 		for (int y = 0; y < hue_image.rows; ++y) {
@@ -35,13 +33,9 @@ double Tamura::calc_Sbest() {
 					best_k = k;
 			}
 			s_best[x + y * hue_image.cols] = pow(2.0, (double)best_k);
-			best_k = 0;
+			best_k = k_min;
 		}
 	}
-
-	int result = 0;
-	int w = hue_image.cols;
-	int h = hue_image.rows;
 
 	for (int i = 0; i < w - 1; ++i) 
 		for (int j = 0; j < h - 1; ++j) 
@@ -51,17 +45,18 @@ double Tamura::calc_Sbest() {
 }
 
 
-double *Tamura::calc_mean_gray_val(int k){
+double *Tamura::calc_mean_gray_val(int k) {
 	double *mean_gray_val_mat = new double[hue_image.rows * hue_image.cols];
 
 	int k_pow = pow(2, k - 1);
 
 	for (int x = k_pow; x < (hue_image.cols - k_pow); x++) 
-		for (int y = k_pow; y < (hue_image.rows - k_pow); y++) 
-			for (int i = x - k_pow; i < x + k_pow; i++) 
-				for (int j = y - k_pow; j < y + k_pow; j++) 
-					mean_gray_val_mat[x + (y * hue_image.cols)] = (double) hue_image.at<int>(y, x) / pow(2, 2 * k);
-
+		for (int y = k_pow; y < (hue_image.rows - k_pow); y++) {
+			mean_gray_val_mat[x + (y * hue_image.cols)]= 0;
+			for (int i = x - k_pow; i < x + k_pow; i++)
+				for (int j = y - k_pow; j < y + k_pow; j++)
+					mean_gray_val_mat[x + (y * hue_image.cols)] += (double)hue_image.at<uchar>(i, j) / pow(2, 2 * k);
+		}
 	return mean_gray_val_mat;
 }
 

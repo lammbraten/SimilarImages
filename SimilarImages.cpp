@@ -9,6 +9,8 @@
 
 #include "include\Histogramm.h"
 #include "include\Distances.h"
+#include "include\Tamura.h"
+#include "SimilarImages.h"
 
 using namespace std;
 using namespace cv;
@@ -97,6 +99,7 @@ int printMenu() {
 	cout << "(16) \t compare by average variance" << endl;
 	cout << "(17) \t compare by chi-square" << endl;
 	cout << "(18) \t compare by JD" << endl;
+	cout << "(20) \t tamura" << endl;
 	cout << "(100) \t end" << endl;
 	cout << MENULINE << endl;
 
@@ -272,10 +275,28 @@ vector<Result> calc_crosstalk() {
 	return results;
 }
 
+vector<Result> calc_tamura() {
+	vector<Result> results;
+
+	for (Histogramm *h : histograms) {
+		Result r;
+		Tamura tamura = Tamura(1, 3, h->getHueChannel());
+		r.name = h->getFilename();
+		r.img = h->getImage();
+		r.dst = tamura.calc_Sbest();
+		r.pos = -1;
+
+		results.push_back(r);
+	}
+	return results;
+}
+
+
+
 int main() {
 	int val;
 	int end = 0;
-	histograms = readImages("data");
+	histograms = readImages("tamura");
 
 	while (!end) {
 		 val = printMenu();
@@ -313,6 +334,9 @@ int main() {
 			break;
 		case 18:
 			showResults(getTopTenResults(calc_default(Distances::jeffrey_divergence)));
+			break;
+		case 20:
+			showResults(calc_tamura());
 			break;
 		case 100:
 			end = 1;
