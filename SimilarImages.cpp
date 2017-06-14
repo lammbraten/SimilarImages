@@ -22,6 +22,7 @@ vector<Histogramm *> histograms;
 struct Result {
 	string name;
 	Mat img;
+	Mat3b hist_img;
 	double dst;
 	int pos;
 };
@@ -179,6 +180,55 @@ void showResultImages(vector<Result> results) {
 	waitKey(0);
 }
 
+void showResultImagesAmdHistograms(vector<Result> results) {
+	Mat tmp;
+	string windowname;
+
+	int start_x = 600;
+	int start_y = 200;
+	int size = 200;
+	int row_size = 6;
+	int act_x = start_x;
+	int act_y = start_y;
+	int i = 0;
+	cout << "Result Images:" << endl;
+	for (Result r : results) {
+
+		windowname = to_string(r.pos) + " " + r.name;
+		resize(r.img, tmp, Size(size, size));
+		imshow(windowname, tmp);
+
+		moveWindow(windowname, act_x, act_y);
+
+		i++;
+		if (i % row_size == 0) {
+			act_x = start_x;
+			act_y += size;
+		}
+		else {
+			act_x += size;
+		}
+
+		windowname = windowname + "-Hist";
+		resize(r.hist_img, tmp, Size(size, size));
+		imshow(windowname, tmp);
+
+		moveWindow(windowname, act_x, act_y);
+
+		i++;
+		if (i % row_size == 0) {
+			act_x = start_x;
+			act_y += size;
+		}
+		else {
+			act_x += size;
+		}
+
+		cout << "Nr " << r.pos << ": \t" << setw(40) << r.name << "\t dist: " << r.dst << endl;
+	}
+	waitKey(0);
+}
+
 void showOnlyResultList(vector<Result> results) {
 	cout << "Result List:" << endl;
 	for (Result r : results) 
@@ -208,12 +258,15 @@ void showResults(vector<Result> results) {
 	cout << MENULINE << endl;
 	cout << "(0) only list" << endl;
 	cout << "(1) list with images" << endl;
+	cout << "(2) list with images and histogramms" << endl;
 	cout << MENULINE << endl;
 	
 	cin >> val;
 
-	if (val == 0)
+	if (val == 1)
 		showOnlyResultList(results);
+	if (val == 2)
+		showResultImagesAmdHistograms(results);
 	else
 		showResultImages(results);
 }
@@ -276,14 +329,20 @@ vector<Result> calc_crosstalk() {
 }
 
 vector<Result> calc_tamura() {
+	int id = getReferenceImageId();
 	vector<Result> results;
+
+	Tamura ref = Tamura(1, 3, histograms.at(id)->getHueChannel());
+	ref.calc_Sbest();
 
 	for (Histogramm *h : histograms) {
 		Result r;
 		Tamura tamura = Tamura(1, 3, h->getHueChannel());
 		r.name = h->getFilename();
 		r.img = h->getImage();
-		r.dst = tamura.calc_Sbest();
+		tamura.calc_Sbest();
+		r.dst = ref.calcDist(tamura);
+		r.hist_img = tamura.calcHist();
 		r.pos = -1;
 
 		results.push_back(r);
@@ -336,7 +395,7 @@ int main() {
 			showResults(getTopTenResults(calc_default(Distances::jeffrey_divergence)));
 			break;
 		case 20:
-			showResults(calc_tamura());
+			showResults(getTopTenResults(calc_tamura()));
 			break;
 		case 100:
 			end = 1;

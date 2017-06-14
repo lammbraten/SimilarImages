@@ -1,6 +1,7 @@
 #pragma once
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2\opencv.hpp>
 
 using namespace cv;
 using namespace std;
@@ -9,6 +10,8 @@ class Tamura {
 public:
 	Tamura(int k_min, int k_max, Mat hue_image);
 	double calc_Sbest();
+	Mat3b calcHist();
+	double calcDist(Tamura other);
 
 private:
 	int k_min, k_max;
@@ -16,6 +19,7 @@ private:
 	vector<double*> gray_val_differences_h;
 	vector<double*> gray_val_differences_v;
 	Mat hue_image;
+	double sBest;
 
 	static const int HORIZONTAL = 1;
 	static const int VERTICAL = -1;

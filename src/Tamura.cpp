@@ -41,7 +41,8 @@ double Tamura::calc_Sbest() {
 		for (int j = 0; j < h - 1; ++j) 
 			result += s_best[i + j * hue_image.cols];
 
-	return (result/(w*h));
+	this->sBest = result / (w*h);
+	return sBest;
 }
 
 
@@ -73,4 +74,37 @@ void Tamura::gray_val_differences(int k, double *A_k, double *E_kh, double *E_kv
 				A_k[x + ((y - k_pow) * hue_image.cols)]
 				- A_k[x + ((y + k_pow) * hue_image.cols)]);
 		}
+}
+
+Mat3b Tamura::calcHist() {
+	int bins = 256;
+	int histSize[] = {bins};
+	float lranges[] = {0, 256};
+	const float* ranges[] = {lranges};
+	Mat hist;
+	int channels[] = {0};
+	cv::calcHist(&hue_image, 1, channels, Mat(), hist, 1, histSize, ranges, true, false);
+
+	int const hist_height = 256;
+	Mat3b hist_image = Mat3b::zeros(hist_height, bins);
+	Mat hist_norm;
+	normalize(hist, hist_norm, 0, 1, NORM_MINMAX, -1, Mat());
+
+	double max_val = 0;
+	minMaxLoc(hist_norm, 0, &max_val);
+
+	for (int b = 0; b < bins; b++) {
+		float const binVal = hist_norm.at<float>(b);
+		int const height = cvRound((4 * binVal)*hist_height / max_val);
+		line(hist_image, Point(b, hist_height - height), Point(b, hist_height), Scalar::all(255));
+	}
+
+	return hist_image;
+}
+
+double Tamura::calcDist(Tamura other) {
+	cout << "F_crs: " << Vec2d(this->sBest, other.sBest) << endl;
+	return fabs(this->sBest - other.sBest);
+
+
 }
